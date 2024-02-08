@@ -1,8 +1,11 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { sample } from '../../utils';
 import { WORDS } from '../../data';
 import Guess from '../Guess/Guess';
+import { checkGuess } from '../../game-helpers';
+import { NUM_OF_GUESSES_ALLOWED } from '../../constants';
+import Banner from '../Banner/Banner';
 
 // Pick a random word on every pageload.
 const answer = sample(WORDS);
@@ -12,6 +15,13 @@ console.info({ answer });
 function Game() {
   const [guessInputValue, setGuessInputValue] = useState('');
   const [guesses, setGuesses] = useState([]);
+  const [gameStatus, setGameStatus] = useState('');
+
+  useEffect(() => {
+    if (guesses.length >= NUM_OF_GUESSES_ALLOWED) {
+      setGameStatus('lost');
+    }
+  }, [guesses]);
 
   const handleGuessInputOnChange = (event) => {
     setGuessInputValue(event.target.value.toUpperCase());
@@ -19,9 +29,19 @@ function Game() {
 
   const handleFormSubmit = (event) => {
     event.preventDefault();
-    console.log({ guess: guessInputValue });
     setGuessInputValue('');
     setGuesses([...guesses, guessInputValue]);
+
+    const guessResults = checkGuess(guessInputValue, answer);
+
+    if (guessResults !== null) {
+      const isCorrectGuess = Object.values(guessResults).every(
+        (guess) => guess.status === 'correct'
+      );
+      if (isCorrectGuess) {
+        setGameStatus('won');
+      }
+    }
   };
 
   return (
@@ -35,8 +55,17 @@ function Game() {
           value={guessInputValue}
           onChange={handleGuessInputOnChange}
           pattern='^[a-zA-Z]{5}$'
+          disabled={gameStatus === 'won' || gameStatus === 'lost'}
         />
       </form>
+
+      {gameStatus ? (
+        <Banner
+          type={gameStatus === 'won' ? 'happy' : 'sad'}
+          numberOfGuesses={guesses.length}
+          answer={answer}
+        />
+      ) : null}
     </React.Fragment>
   );
 }

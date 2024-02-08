@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 
 import { sample } from '../../utils';
 import { WORDS } from '../../data';
-import GuessList from '../GuessList/GuessList';
+import Guess from '../Guess/Guess';
 
 // Pick a random word on every pageload.
 const answer = sample(WORDS);
@@ -26,7 +26,7 @@ function Game() {
 
   return (
     <React.Fragment>
-      <GuessList items={guesses} />
+      <Guess items={guesses} />
       <form className='guess-input-wrapper' onSubmit={handleFormSubmit}>
         <label htmlFor='guess-input'>Enter guess:</label>
         <input

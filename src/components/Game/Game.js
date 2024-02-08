@@ -26,7 +26,7 @@ function Game() {
 
   return (
     <React.Fragment>
-      <Guess items={guesses} />
+      <Guess guesses={guesses} answer={answer} />
       <form className='guess-input-wrapper' onSubmit={handleFormSubmit}>
         <label htmlFor='guess-input'>Enter guess:</label>
         <input
